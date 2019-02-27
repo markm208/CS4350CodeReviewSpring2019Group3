@@ -8,7 +8,8 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 int main()
 {
 	cout << "why isnt anything working!" << endl;
-    char answer[10];
+    const int len = 10;
+    char answer[len];
     int c1, n1, d1;
     int c2, n2, d2;
     
@@ -21,13 +22,14 @@ int main()
     d2 = 3; 
     
     //if the C string could hold at least the characteristic
-    if (subtract(c1, n1, d1, c2, n2, d2, answer, 10))
+    if (subtract(c1, n1, d1, c2, n2, d2, answer, len))
     {
 
         //display string with answer
     }
     else
     {
+        cout << "answer is too big to display." << endl;
         //display error message
     }
     return 0;
@@ -49,12 +51,53 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
         {
             newD = d1;
         }
-        int temp = numOne - numTwo;
-        int newN = temp % newD;
-        int newC = temp/newD;
-        float decimal = newN/newD;
-        float tempAnswer = newC + decimal;
-        cout << tempAnswer;
+        int newNumerator = numOne - numTwo;
+        float answer = newNumerator/newD;
+        float temp = answer;
+        float temp2 = answer;
+        int decCounter = 0;
+        int wholeCounter = 0;
+        // while (temp % 1 != 0)
+        // {
+        //     decCounter ++;
+        //     temp = temp*10;
+        // }
+        while (temp2 > 1)
+        {
+            wholeCounter++;
+            temp2/10;
+        }
+
+        if (len - wholeCounter < 0)
+        {   
+            return false;
+        }
+        else
+        {
+            int placesLeft = len-wholeCounter;
+            int divisor = 1;
+            for (int i = placesLeft; i > 0; i --)
+            {
+                divisor = divisor * 10;
+            }
+            answer = answer * divisor;
+
+            int almostFinalAnswer = answer;
+            float finalAnswer = almostFinalAnswer / divisor;
+            
+            
+            
+        }
+        
+
+        int sizeOfNumber = decCounter + wholeCounter;
+
+        
+        // int newN = temp % newD;
+        // int newC = temp/newD;
+        // float decimal = newN/newD;
+        // float tempAnswer = newC + decimal;
+        // cout << tempAnswer;
           
 }
 // bool isNumber(int n)
