@@ -4,6 +4,7 @@ using namespace std;
 
 int main()
 {
+    testMultiply();
     return 0;
 }
 
@@ -105,5 +106,130 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
     // This is here so that the result always has the end string at the end
 	result[len] = '\0';
 
+	return true;
+}
+
+bool testMultiply() {
+	cout << "Beginning Testing of multiply(c1, n1, d1, c2, n2, d2, result[], len)" << endl << endl;
+	char result[13];
+
+	// These values should all work
+	// Characteristics: -10 through 10
+	// Numerators: 0 through 10
+	// Denominators: 1 through 10
+	for (int c1 = -10; c1 < 11; c1++)
+	{
+		for (int c2 = -10; c2 < 11; c2++)
+		{
+			for (int n1 = 0; n1 < 11; n1++)
+			{
+				for (int n2 = 0; n2 < 11; n2++)
+				{
+					for (int d1 = 1; d1 < 11; d1++)
+					{
+						for (int d2 = 1; d2 < 11; d2++)
+						{
+							if (multiply(c1, n1, d1, c2, n2, d2, result, 12) == false)
+							{
+								cout << "FAILURED WHEN IT SHOULD HAVE PASSED" << endl;
+								return false;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// These should all pass (negative / negative = positive)
+	// Characteristics: constant
+	// Numerators: -10 through -1
+	// Denominators: -10 through -1
+	for (int n1 = -10; n1 < 0; n1++)
+	{
+		for (int n2 = -10; n2 < 0; n2++)
+		{
+			for (int d1 = -10; d1 < 0; d1++)
+			{
+				for (int d2 = -10; d2 < 0; d2++)
+				{
+					if (multiply(5, n1, d1, 6, n2, d2, result, 12) == false)
+					{
+						cout << "FAILED ON NEGATIVE OVER NEGATIVE (PASS)" << endl;
+						cout << "N1: " << n1 << endl;
+						cout << "D1: " << d1 << endl;
+						cout << "N2: " << n2 << endl;
+						cout << "D2: " << d2 << endl;
+						return false;
+					}
+				}
+			}
+		}
+	}
+
+	// DIVIDE BY 0 FAILURES
+	cout << "Should get 3 divide by zero errors below:" << endl;
+	if (multiply(4, 5, 0, 7, 8, 9, result, 12) == true )
+	{
+		cout << "FAILED ON FIRST NUMBER DIVIDE BY 0" << endl;
+		return false;
+	}
+	if (multiply(4, 5, 6, 7, 8, 0, result, 12) == true)
+	{
+		cout << "FAILED ON SECOND NUMBER DIVIDE BY 0" << endl;
+		return false;
+	}
+	if (multiply(4, 5, 0, 7, 8, 0, result, 12) == true)
+	{
+		cout << "FAILED ON BOTH NUMBERS DIVIDE BY 0" << endl;
+		return false;
+	}
+
+	// NEGATIVE FRACTIONS
+	cout << endl << "Should get 8 negative fraction errors below:" << endl;
+	if (multiply(4, -5, 6, 7, 8, 9, result, 12) == true)
+	{
+		cout << "FAILED ON FIRST NUMERATOR NEGATIVE" << endl;
+		return false;
+	}
+	if (multiply(4, 5, -6, 7, 8, 9, result, 12) == true)
+	{
+		cout << "FAILED ON FIRST DENOMINATOR NEGATIVE" << endl;
+		return false;
+	}
+	if (multiply(4, 5, 6, 7, -8, 9, result, 12) == true)
+	{
+		cout << "FAILED ON SECOND NUMERATOR NEGATIVE" << endl;
+		return false;
+	}
+	if (multiply(4, 5, 6, 7, 8, -9, result, 12) == true)
+	{
+		cout << "FAILED ON SECOND DENOMINATOR NEGATIVE" << endl;
+		return false;
+	}
+	if (multiply(4, -5, 6, 7, -8, 9, result, 12) == true)
+	{
+		cout << "FAILED ON BOTH NUMERATOR NEGATIVE" << endl;
+		return false;
+	}
+	if (multiply(4, 5, -6, 7, 8, -9, result, 12) == true)
+	{
+		cout << "FAILED ON BOTH DENOMINATOR NEGATIVE" << endl;
+		return false;
+	}
+	if (multiply(4, -5, 6, 7, 8, -9, result, 12) == true)
+	{
+		cout << "FAILED ON FIRST NUMERATOR, SECOND DENOMINATOR NEGATIVE" << endl;
+		return false;
+	}
+	if (multiply(4, 5, -6, 7, -8, 9, result, 12) == true)
+	{
+		cout << "FAILED ON SECOND NUMERATOR, FIRST DENOMINATOR NEGATIVE" << endl;
+		return false;
+	}
+
+	// Characterisitcs, Numerators, and Denominators all ran through every integer from -10 through 10
+
+	cout << endl << "SUCCESS" << endl;
 	return true;
 }
