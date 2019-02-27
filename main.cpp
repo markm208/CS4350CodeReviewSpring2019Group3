@@ -7,23 +7,103 @@ int main()
     return 0;
 }
 
+// multiply returns a boolean: true if the provided numbers can by multiplied and false if they cannot.
+// NEED TO FIND OUT IF CUSTOMER WOULD LIKE TO TRUNCATE, ROUND UP, ROUND DOWN, ETC
+//  IF THE NUMBER HAS MORE DIGITS THAN THE ARRAY CAN STORE.
+// NEED TO FIND OUT IF CUSTOMER WANTS SOMETHING TO HAPPEN OTHER THAN RETURN FALSE IF MULTIPLICATION CANNOT BE PERFORMED.
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
-    // FIND CHARACTERISTIC
-    int n = n1*n2;
-    int d = d1*d2;
-    int characteristic = c1*c2 + n/d;
+	// Convert numbers into just numerator and denominator and multiply to get multiplication answer
+	int numerator1 = c1*d1 + n1;
+	int numerator2 = c2*d2 + n2;
+	int n = numerator1*numerator2;
+	int d = d1*d2;
 
-    // TURN CHARACTERISITIC INTO CHAR ARRAY (STRING)
-    // Find length of characterisitc
-    int characterisiticLength = 0;
-    // Find each digit in characterisitic
-    // Place digits as characters into 'result'
+    // At this point n/d would be the correct answer except the decimal place would be lost because they are integers
 
-    // FIND DIGITS IN DECIMAL PLACE
-    // Place decimal point as character into result
-    // Place digits as characters into result
+    // Check to make sure valid input. Only invalid integer is if the denominator is zero.
+	if (d == 0)
+	{
+        // Not in specs, here for debugging and can be easily removed if needed
+		cout << "Error: Cannot Divide By Zero" << endl;
+		return false;
+	}
 
+    // Because n and d are integers, n divided by d will truncate and provide only the characteristic
+	int characteristic = n / d;
+
+
+
+	// MOVE CHARACTERISITIC INTO RESULT (CHAR ARRAY)
+
+	// Find length of characterisitc (number of digits in characteristic)
+	int characteristicNumberDigits = 0;
+	int magnitudeCharacteristic = 1;
+	while (characteristic / magnitudeCharacteristic != 0)
+	{
+		magnitudeCharacteristic *= 10;
+		characteristicNumberDigits += 1;
+	}
+    // The magnitude at this point is 10 times larger
+    // Dividing by 10 will get the magnitude of the characteristic
+	magnitudeCharacteristic /= 10;
+
+	// Put digits from characteristics into result
+	for (unsigned int i = 0; i < characteristicNumberDigits; i++) {
+		// **Need to find out from customer exactly what they would like when characteristic is too big for the array**
+        if (i == len - 1)
+		{
+			result[len] = '\0';
+			return true;
+		}
+		int nextDigit = characteristic / magnitudeCharacteristic;
+        // The character '0' is represented as an ASCII number and 
+        //  adding the nextDigit to '0' increases the ASCII number so 1 becomes '1', 2 becomes '2', etc.
+        result[i] = nextDigit + '0';
+		characteristic -= (nextDigit*magnitudeCharacteristic);
+		magnitudeCharacteristic /= 10;
+	}
+
+
+
+	// FIND DIGITS IN DECIMAL PLACE
+
+    // If there is a decimal place...
+	if (n%d != 0)
+	{
+		// Place decimal point as character into result
+		result[characteristicNumberDigits] = '.';
+
+		int numerator = n%d;
+		for (unsigned int i = characteristicNumberDigits + 1; i < len; i++)
+		{
+            // To access the next decimal point I multiply the numerator by ten then divide by d
+            // Because numerator and d are integers it will only provide the characteristic
+			numerator *= 10;
+			result[i] = numerator / d + '0';
+            // By replacing the numerator with numerator%d it removes the characteristic
+			numerator %= d;
+
+            // If the numerator at this point is equal to 0 the decimal point has ended.
+			if (numerator == 0)
+			{
+                // Can't have string end only at end of array because
+                //  there would be garbage after the product before the string ends
+				result[i + 1] = '\0';
+				break;
+			}
+        }
+	}
+    // If the product has no decimal place
+	else
+	{
+        // Can't have string end only at end of array because
+        //  there would be garbage after the product before the string ends
+		result[characteristicNumberDigits] = '\0';
+	}
     
-    return true;
+    // This is here so that the result always has the end string at the end
+	result[len] = '\0';
+
+	return true;
 }
