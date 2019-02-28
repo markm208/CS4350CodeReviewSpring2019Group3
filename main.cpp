@@ -3,7 +3,7 @@
 using namespace std;
 
 bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int length);
-void addToArray(int num, int pos, char answer[]);
+void addToArray(char num, bool convert, int pos, char answer[]);
 
 
 int main()
@@ -13,7 +13,7 @@ int main()
 
     int c1, n1, d1;
     int c2, n2, d2;
-    c1 = 4;
+    c1 = -4;
     n1 = 1;
     d1 = 2;
     
@@ -45,9 +45,23 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
 	}
     else //otherwise we can continue
     {
-        //create 'new' numbers to keep track of
+        //create 'new' numerators and pos to keep track of array
         int newNumerator1;
 		int newNumerator2;
+        int pos = 0;
+
+        //check for negative characteristic and flip to postive numbers
+        //and add '-' to answer array
+		if (c1 < 0)
+		{
+			c1 = c1 * -1;
+            addToArray('-', false, pos++, answer);
+		}
+		if (c2 < 0)
+		{
+			c2 = c2* -1;
+            addToArray('-', false, pos++, answer);
+		}
 
         //improper fractions for the new numerators
 		newNumerator1 = (c1 * d1) + n1;
@@ -55,18 +69,26 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
 
         //divide and first num to array
 		int num = newNumerator1 / newNumerator2;
-		addToArray(num, 0, answer);
+		addToArray(num, true, pos++, answer);
+
+         //add null char at the end
+        addToArray('\0', false, pos, answer);
 
     }
 
     return retVal;
 }
 
-void addToArray(int num, int pos, char answer[])
+void addToArray(char c, bool convert, int pos, char answer[])
 {
-    //cast to char and fix offset
-    char numToInsert = (char)num + 48;
-
-    //insert into array
-	answer[pos] = numToInsert;
+    cout << "pos: " << pos << endl;
+    
+    if(convert)
+    {
+        answer[pos] = c + 48;
+    }
+    else
+    {
+	    answer[pos] = c;
+    }
 }
