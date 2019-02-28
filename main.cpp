@@ -15,7 +15,7 @@ int main()
     int c2, n2, d2;
     c1 = 4;
     n1 = 1;
-    d1 = 2;
+    d1 = 4;
     
     c2 = 1;
     n2 = 1;
@@ -76,10 +76,29 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
         //divide first num and add to array
 		int num = endNumer / endDenom;
 		addToArray(num, true, pos++, answer);
+        int remainder = endNumer;
 
-        //add null char at the end
-        addToArray('\0', false, pos, answer);
+        //add a decimal
+		addToArray('.', false, pos++, answer);
 
+        while(pos < length - 1)
+        {
+            num = num * endDenom;
+			num = remainder - num;
+
+            //if 0, end array and loop
+            if(num == 0)
+            {
+                //add null char
+                addToArray('\0', false, pos++, answer);
+                break;
+            }
+
+            num = num * 10; //"move the decimal"
+            remainder = num; //save number
+            num = num / endDenom; //divide
+            addToArray(num, true, pos++, answer); //add to array
+        }
     }
 
     return retVal;
