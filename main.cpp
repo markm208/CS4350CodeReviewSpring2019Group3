@@ -13,7 +13,7 @@ int main()
 
     int c1, n1, d1;
     int c2, n2, d2;
-    c1 = -4;
+    c1 = 4;
     n1 = 1;
     d1 = 2;
     
@@ -48,6 +48,8 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
         //create 'new' numerators and pos to keep track of array
         int newNumerator1;
 		int newNumerator2;
+        int endNumer;
+        int endDenom;
         int pos = 0;
 
         //check for negative characteristic and flip to postive numbers
@@ -67,11 +69,15 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
 		newNumerator1 = (c1 * d1) + n1;
 		newNumerator2 = (c2 * d2) + n2;
 
-        //divide and first num to array
-		int num = newNumerator1 / newNumerator2;
+        //cross multiply with new numerators
+		endNumer = newNumerator1 * d2;
+		endDenom = d1 * newNumerator2;
+
+        //divide first num and add to array
+		int num = endNumer / endDenom;
 		addToArray(num, true, pos++, answer);
 
-         //add null char at the end
+        //add null char at the end
         addToArray('\0', false, pos, answer);
 
     }
@@ -80,9 +86,7 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
 }
 
 void addToArray(char c, bool convert, int pos, char answer[])
-{
-    cout << "pos: " << pos << endl;
-    
+{   
     if(convert)
     {
         answer[pos] = c + 48;
