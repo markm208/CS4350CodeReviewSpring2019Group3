@@ -6,7 +6,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 
 int main()
 {
-    const int len = 6;
+    const int len = 10;
     char answer[len];
     int c1, n1, d1;
     int c2, n2, d2;
@@ -127,12 +127,12 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		temp--;
 	}
 	//redo initial calculation
-	long mantissa = (newNumerator * multiplier)/newD;
+	unsigned long mantissa = (newNumerator * multiplier)/newD;
 	/*The above live is the same calculation we did earlier, except the decimal is moved over to
 	include the right amount of decimal characters.  It is treated as a whole number, but we know that the 
 	extra digits are our missing decimal numbers*/
 	
-	long mantissaTemp = mantissa;
+	unsigned long mantissaTemp = mantissa;
 	//adds the rest of the digits to the array
 	for (int i = 0; i < len - charCounter; i++)
 	{
