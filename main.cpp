@@ -12,11 +12,11 @@ int main()
     int c1, n1, d1;
     int c2, n2, d2;
     
-    c1 = 2;
+    c1 = 20;
     n1 = 1;
     d1 = 2;
     
-    c2 = 1;
+    c2 = 18;
     n2 = 1;
     d2 = 4; 
     
@@ -44,14 +44,16 @@ int main()
 //new functions go here
 bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
-	bool isNegative = false;
+	bool isNegative = false;//used at the end to add the negative
 	int swapVal = 0;
 	bool retVal = true;
+	//turn the two fractions into improper fractions
     int numOne = c1*d1 + n1;
     int numTwo = c2*d2 + n2;
 	int charCounter = 0;
 	
     int newD;
+	//if we don't have common denominators
     if (d1 != d2)
     {
         numOne = numOne*d2;
@@ -62,6 +64,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
     {
         newD = d1;
     }
+	//if the result is going to be negative, switch the values and will tack on a negative sign later
 	if (numTwo > numOne)
 	{
 		swapVal = numTwo;
@@ -84,23 +87,26 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		charCounter++;
 		temp = temp / 10;
 	}
-	if (charCounter + 2 > len)//account for null terminator and period
+	if (charCounter + 2 > len)//check if the array can at least hold the characteristic
 	{
 		return false;
 	}
 	else
 	{
 		temp = characteristic;
+		//special case if the characteristic is zero
 		if (charCounter == 0)
 		{
 			result[charCounter] = '0';
 			result[charCounter + 1] = '.';
 			charCounter += 2;
 		}
+		//the first thing thats being added is the '.'  could have been done later but whatever
 		else
 		{
 			result[charCounter] = '.';
 			
+			//add the characteristic digits to the array
 			for (int i = charCounter; i > 0; i--)
 			{
 				int remainder = temp % 10;
@@ -110,9 +116,10 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 			}
 			charCounter++;
 		}
-		
+		//determine how many spaces I have left to work with
 		digitsLeft = len - (charCounter);
 	}
+	//create a multiplier digit that we will use later on line 131
 	int multiplier = 1;
 	temp = digitsLeft;
 	while (temp != 0)
@@ -121,28 +128,26 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		temp--;
 	}
 	//redo initial calculation
-	characteristic = (newNumerator * multiplier) / newD;//this will give us the correct number of decimals
-	//now we extract the decimal numbers by recounting the numbers then pulling from the end
-	temp = characteristic;
-	//charCounter = 0;
-	/*
-	while (temp != 0)
-	{
-		charCounter++;
-		temp = temp / 10;
-	}
-	*/
-	//result[len - 1] = '\0';
-	temp = characteristic;
+	int mantissa = (newNumerator * multiplier) / newD;
+	/*The above live is the same calculation we did earlier, except the decimal is moved over to
+	include the right amount of decimal characters.  It is treated as a whole number, but we know that the 
+	extra digits are our missing decimal numbers*/
+	
+	temp = mantissa;
+	//adds the rest of the digits to the array
 	for (int i = 0; i < len - charCounter; i++)
 	{
+		//gets the right-most digit of our new mantissa integer
 		int remainder = temp % 10;
+		//adds a digit - starting at the end and moving to the left 
 		result[len - i - 1] = char('0' + remainder);
 		temp = temp / 10;
 	}
 
 	if (isNegative)
 	{
+		/*I was having trouble with the - sign being overridden
+		so I moved this part to the end to make sure that doesn't happen.*/
 		result[0] = '-';
 	}
 	return retVal;
