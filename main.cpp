@@ -7,18 +7,18 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 
 int main()
 {
-    const int len = 10;
+    const int len = 6;
     char answer[len];
     int c1, n1, d1;
     int c2, n2, d2;
     
-    c1 = 20;
-    n1 = 1;
-    d1 = 2;
+    c1 = 5;
+    n1 = 5;
+    d1 = 27;
     
-    c2 = 18;
-    n2 = 1;
-    d2 = 4; 
+    c2 = 2;
+    n2 = 6;
+    d2 = 27; 
     
     //if the C string could hold at least the characteristic
     if (subtract(c1, n1, d1, c2, n2, d2, answer, len))
@@ -128,20 +128,20 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		temp--;
 	}
 	//redo initial calculation
-	int mantissa = (newNumerator * multiplier) / newD;
+	long mantissa = (newNumerator * multiplier)/newD;
 	/*The above live is the same calculation we did earlier, except the decimal is moved over to
 	include the right amount of decimal characters.  It is treated as a whole number, but we know that the 
 	extra digits are our missing decimal numbers*/
 	
-	temp = mantissa;
+	long mantissaTemp = mantissa;
 	//adds the rest of the digits to the array
 	for (int i = 0; i < len - charCounter; i++)
 	{
 		//gets the right-most digit of our new mantissa integer
-		int remainder = temp % 10;
+		int remainder = mantissaTemp % 10;
 		//adds a digit - starting at the end and moving to the left 
 		result[len - i - 1] = char('0' + remainder);
-		temp = temp / 10;
+		mantissaTemp = mantissaTemp / 10;
 	}
 
 	if (isNegative)
