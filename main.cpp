@@ -2,6 +2,19 @@
 
 using namespace std;
 
+//get the length of an integer.
+int lengthof(int integer)
+{
+    int length=1;
+    int converter=10;
+    while(converter<=integer)
+    {
+        converter=converter*10;
+        length++;
+    }
+    return length;
+}
+//set up divisor to hightest divisor
 int divisor(int d1,int d2,int &n1,int &n2)
 {
     if(d1 == d2)
@@ -34,18 +47,21 @@ int divisor(int d1,int d2,int &n1,int &n2)
         }
     }
 }
-char* translate_to_string(int integer)
+//translate integer to char array
+void translate_to_string(int integer,char* resultV)
 {
     int converter=1;
     int length=0;
-    while(converter<=integer)
+    while(integer>=converter)
     {
         length++;
         converter=converter*10;
     }
     //convert int to char array
     char result[length];
-    for(int i = length;i>0;i--)
+    //make converter equal to the power of the integer
+    converter=converter/10;
+    for(int i = length;i>=0;i--)
     {
         int local_int=0;
         while(integer>=converter)
@@ -57,17 +73,27 @@ char* translate_to_string(int integer)
         {
             converter=converter/10;
         }
+        //push integer on to array as char
         result[length-i]=(char)(local_int+48);
     }
+    //change original array passed in
+    for(int i =0;i<length;i++)
+    {
+        resultV[i]=result[i];
+    }
     //convert to pointer
-    char* pointer = result;
-    return pointer;    
 }
-bool add(int c1,int n1, int d1,int c2,int n2, int d2, char result[],int len)
+//add function
+bool add(int c1,int n1, int d1,int c2,int n2, int d2, char* result,int len)
 {
+    //check if either number is negative.
     if(c2<0)
     {
         n2=-n2;
+    }
+    if(c1<0)
+    {
+        n1=-n1;
     }
     //set up answer devisor and set up numerator as well
     int d3 = divisor(d1,d2,n1,n2);
@@ -76,11 +102,6 @@ bool add(int c1,int n1, int d1,int c2,int n2, int d2, char result[],int len)
     int n3=n1+n2;
     //add integers
     int c3=c1+c2;
-    cout<<"c3"<<endl;
-    cout<<c3<<endl;
-    cout<<c1<<endl;
-    cout<<c2<<endl;
-    cout<<"end of c3"<<endl;
     //add, subtract, or do nothing to characteristic
     if(n3>d3)
     {
@@ -94,24 +115,54 @@ bool add(int c1,int n1, int d1,int c2,int n2, int d2, char result[],int len)
         n3=d3+n3;
     }
     //store results
-    cout<<c3<<endl;
-    cout<<n3<<endl;
-    cout<<d3<<endl;
-    char* char_c3=translate_to_string(c3);
-    char* char_n3=translate_to_string(n3);
-    char* char_d3=translate_to_string(d3);
+    int len_c3=lengthof(c3);
+    int len_n3=lengthof(n3);
+    char char_c3[len_c3];
+    char char_n3[len_n3];
 
-    //loop to add to length
-    for(int i =0;i<sizeof(&char_c3);i++)
+    translate_to_string(c3,char_c3);
+    translate_to_string(n3,char_n3);
+
+    //loop to add to characteristic and numerator to result
+    int i=0;
+    while(i!=len_c3)
     {
-        cout<< &char_c3[i];
+        result[i]=char_c3[i];
+        i++;
     }
+    if(i==len)
+    {
+
+    }
+    else
+    {
+        result[i]='.';
+        i++;
+    }
+    while(i!=(len_c3+len_n3+1) && i!=len)
+    {
+        result[i]=char_n3[i-(len_c3+1)];
+        i++;
+    }
+
+    return true;
 }
 
 int main()
 {
-    char result[3];
-    add(599,6,10,-2,7,10,result,3);
+    //set up char array
+    char result[10];
+    //add values
+    add(59967,6,10,-28,74,100,result,10);
+    int i = 0;
+    //print results
+    cout<<"your result is :";
+    while(result[i]<=57 &&result[i]>=48||result[i]=='.')
+    {
+        cout<<result[i];
+        i++;
+    }
+    cout<<endl;
     return 0;
 }
 
