@@ -100,7 +100,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 			result[charCounter + 1] = '.';
 			charCounter += 2;
 		}
-		//the first thing thats being added is the '.'  could have been done later but whatever
+		//the first thing thats being added is the '.'  could have been done later
 		else
 		{
 			result[charCounter] = '.';
