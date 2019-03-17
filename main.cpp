@@ -2,6 +2,12 @@
 
 using namespace std;
 
+bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
+bool checkOverflowMult(int num1, int num2);
+bool checkOverflowAdd(int num1, int num2);
+bool testMultiply();
+
+
 int main()
 {
     if(testMultiply())
@@ -17,9 +23,6 @@ int main()
 }
 
 // multiply returns a boolean: true if the provided numbers can by multiplied and false if they cannot.
-// NEED TO FIND OUT IF CUSTOMER WOULD LIKE TO TRUNCATE, ROUND UP, ROUND DOWN, ETC
-//  IF THE NUMBER HAS MORE DIGITS THAN THE ARRAY CAN STORE.
-// NEED TO FIND OUT IF CUSTOMER WANTS SOMETHING TO HAPPEN OTHER THAN RETURN FALSE IF MULTIPLICATION CANNOT BE PERFORMED.
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
 	// Convert numbers into just numerator and denominator and multiply to get multiplication answer
@@ -36,16 +39,40 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		return false;
 	}
 
-	// checking if overflow for c1*d1, c2*d2, and d1*d2
-	if (checkOverflow(c1, d1) == true || checkOverflow(c2, d2) == true || checkOverflow(d1, d2))
+	if((c1 == 0 && n1 == 0) || (c2 == 0 && n2 == 0))
+	{
+		result[0] = '0';
+		result[1] = '\0';
+		return true;
+	}
+
+	// checking if overflow for c1*d1, c2*d2, d1*d2, c1*d1+n1, and c2*d2+n2
+	if (checkOverflowMult(c1, d1) == true || checkOverflowMult(c2, d2) == true || checkOverflowMult(d1, d2) == true || checkOverflowAdd(c1*d1, n1) == true || checkOverflowAdd(c2*d2, n2) == true)
 	{
 		return false;
+	}
+
+	int pos = 0;
+
+	// If both are negative the negative cancels and the result is positive.
+	if(c1 < 0 && c2 < 0)
+	{
+		c1*=-1;
+		c2*=-1;
+	}
+	// If one of them is negative the result is negative.
+	else if(c1 < 0 || c2 < 0)
+	{
+		c1 = abs(c1);
+		c2 = abs(c2);
+		result[pos] = '-';
+		pos++;
 	}
 
 	int numerator1 = c1*d1 + n1;
 	int numerator2 = c2*d2 + n2;
 	// checking if overflow for numerator1*numerator2
-	if (checkOverflow(numerator1, numerator2) == true)
+	if (checkOverflowMult(numerator1, numerator2) == true)
 	{
 		return false;
 	}
@@ -81,16 +108,11 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 
 	// Put digits from characteristics into result
 	for (unsigned int i = 0; i < characteristicNumberDigits; i++) {
-		// **Need to find out from customer exactly what they would like when characteristic is too big for the array**
-		if (i == len - 1)
-		{
-			result[len] = '\0';
-			return true;
-		}
 		int nextDigit = characteristic / magnitudeCharacteristic;
 		// The character '0' is represented as an ASCII number and 
 		//  adding the nextDigit to '0' increases the ASCII number so 1 becomes '1', 2 becomes '2', etc.
-		result[i] = nextDigit + '0';
+		result[pos] = nextDigit + '0';
+		pos++;
 		characteristic -= (nextDigit*magnitudeCharacteristic);
 		magnitudeCharacteristic /= 10;
 	}
@@ -99,57 +121,61 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 
 	// FIND DIGITS IN DECIMAL PLACE
 
+	int remaining = n%d;
 	// If there is a decimal place...
-	if (n%d != 0)
+	if (remaining != 0)
 	{
 		// Place decimal point as character into result
-		result[characteristicNumberDigits] = '.';
+		result[pos] = '.';
+		pos++;
 
-		int numerator = n%d;
-		for (unsigned int i = characteristicNumberDigits + 1; i < len; i++)
+		// If there is no remaining then there is nothing left for the decimal place except zeros
+		while(remaining != 0)
 		{
 			// To access the next decimal point I multiply the numerator by ten then divide by d
 			// Because numerator and d are integers it will only provide the characteristic
-			numerator *= 10;
-			result[i] = numerator / d + '0';
+			remaining *= 10;
+			result[pos] = remaining / d + '0';
+			pos++;
 			// By replacing the numerator with numerator%d it removes the characteristic
-			numerator %= d;
+			remaining %= d;
 
 			// If the numerator at this point is equal to 0 the decimal point has ended.
-			if (numerator == 0)
+			if (pos == len)
 			{
 				// Can't have string end only at end of array because
 				//  there would be garbage after the product before the string ends
-				result[i + 1] = '\0';
 				break;
 			}
 		}
 	}
-	// If the product has no decimal place
-	else
-	{
-		// Can't have string end only at end of array because
-		//  there would be garbage after the product before the string ends
-		result[characteristicNumberDigits] = '\0';
-	}
 
-	// This is here so that the result always has the end string at the end
-	result[len] = '\0';
+	// Can't have string end only at end of array because
+	//  there would be garbage after the product before the string ends
+	result[pos] = '\0';
+	pos++;
 
 	return true;
 }
 
-bool checkOverflow(int num1, int num2)
+bool checkOverflowMult(int num1, int num2)
 {
-	if (num1 == 0 || num2 == 0)
+	bool retVal = false;
+	if (num1 != 0 && abs(INT_MAX / num1) <= abs(num2))
 	{
-		return false;
+		retVal = true;
 	}
-	if (abs(INT_MAX / num1) <= abs(num2))
+	return retVal;
+}
+
+bool checkOverflowAdd(int num1, int num2)
+{
+	bool retVal = false;
+	if(INT_MAX - abs(num1) < abs(num2))
 	{
-		return true;
+		retVal = true;
 	}
-	return false;
+	return retVal;
 }
 
 bool testMultiply() {
@@ -270,6 +296,24 @@ bool testMultiply() {
 	{
 		return false;
 	}
+
+	// Checking for correct answer
+
+	multiply(1, 1, 2, 3, 0, 2, result, 12);
+	char answer[] = { '4', '.', '5', '\0' };
+	cout << result << ' ' << '=' << '=' << ' ' << answer << endl;
+
+	multiply(-5, 3, 4, 6, 7, 9, result, 12);
+	char ans[] = { '-', '3', '8', '.', '9', '7', '2', '2', '2', '2', '2', '\0' };
+	cout << result << ' ' << '=' << '=' << ' ' << ans << endl;
+
+	multiply(0, 0, 5, INT_MAX, 3, 6, result, 12);
+	char ans2[] = { '0' , '\0'};
+	cout << result << ' ' << '=' << '=' << ' ' << ans2 << endl;
+
+	multiply(-17, 3, 4, -6, 7, 9, result, 12);
+	char ans3[] = { '1', '2', '0', '.', '3', '0', '5', '5', '5', '5', '\0' };
+	cout << result << ' ' << '=' << '=' << ' ' << ans3 << endl;
 
 	return true;
 }
