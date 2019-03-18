@@ -96,12 +96,6 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 			cout << "Test failed: '" << number << "' "
 				<< "was parsed but did not produce the expected results" << endl;
 
-			if (expectedCharacteristic != c)
-			{
-				cout << "expected characteristic: " << expectedCharacteristic << " "
-					<< "actual characteristic: " << c << endl;
-			}
-
 			if (expectedNumerator != n)
 			{
 				cout << "expected numerator: " << expectedNumerator << " "
