@@ -3,8 +3,6 @@
 using namespace std;
 
 bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int length);
-void addToArray(char num, bool convert, int pos, char answer[]);
-
 
 int main()
 {
@@ -54,15 +52,20 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
 
         //check for negative characteristic and flip to postive numbers
         //and add '-' to answer array
-		if (c1 < 0)
+		
+        if(c1 < 0 && c2 < 0)
+        {
+            // don't do anything, answer will be positive
+        }
+        else if (c1 < 0)
 		{
 			c1 = c1 * -1;
-            addToArray('-', false, pos++, answer);
+            answer[pos++] = '-';
 		}
-		if (c2 < 0)
+		else if (c2 < 0)
 		{
 			c2 = c2* -1;
-            addToArray('-', false, pos++, answer);
+            answer[pos++] = '-';
 		}
 
         //improper fractions for the new numerators
@@ -75,11 +78,11 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
 
         //divide first num and add to array
 		int num = endNumer / endDenom;
-		addToArray(num, true, pos++, answer);
+		answer[pos++] = (char)num + 48;
         int remainder = endNumer;
 
         //add a decimal
-		addToArray('.', false, pos++, answer);
+		answer[pos++] = '.';
 
         while(pos < length - 1)
         {
@@ -92,24 +95,12 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
             num = num * 10; //"move the decimal"
             remainder = num; //save number
             num = num / endDenom; //divide
-            addToArray(num, true, pos++, answer); //add to array
+            answer[pos++] = (char)num + 48; //add to array
         }
 
         //add null char to end of array
-        addToArray('\0', false, pos++, answer);
+        answer[pos++] = '\0';
     }
 
     return retVal;
-}
-
-void addToArray(char c, bool convert, int pos, char answer[])
-{   
-    if(convert)
-    {
-        answer[pos] = c + 48;
-    }
-    else
-    {
-	    answer[pos] = c;
-    }
 }
