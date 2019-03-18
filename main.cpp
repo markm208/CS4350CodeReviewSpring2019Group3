@@ -132,7 +132,7 @@ void shouldNotConvert(char number[])
 //This function will go through the numString and check to see if there are any
 //invalid chracters, it will store where the mantissa starts in the numString, and
 //it will store the length of the mantissa
-bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition, int& mantissaLength)
+bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition, int& mantissaLength, bool& isNegative)
 {
     const int decimalVal = '.';
 
@@ -145,11 +145,28 @@ bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition
     //therefore we will ignore everyting until we find a decimal value
     while(numString[currentElement] != decimalVal)
     {
+        if(isNegative == true)
+        {
+            if(numString[currentElement] == '0')
+            {
+                isNegative = true;
+            }
+            else
+            {
+                isNegative = false;
+            }
+            
+        }
+
         //If we get to \0 we know there is no matissa in numString so we will set retval to false
         if(numString[currentElement] == '\0')
         {
             retval = false;
             break;
+        }
+        else if(numString[currentElement] == '-')
+        {
+            isNegative = true;
         }
 
         currentElement++;
@@ -170,14 +187,14 @@ bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition
         while(numString[currentElement] != '\0')
         {
             //Checks to see if the element is 0-9 and if it's not set retval to false for invalid numString
-            if(numString[currentElement] < ASCII_ZERO || numString[currentElement] > ASCII_NINE)
+            if((numString[currentElement] < ASCII_ZERO || numString[currentElement] > ASCII_NINE) && numString[currentElement] != ' ')
             {
                 retval = false;
                 break;
             }
             //If we find a zero we need to keep track of how many zeros we have found to make sure
             //that if it's only zeros at the end we need to cut them off the mantissa
-            else if(numString[currentElement] == ASCII_ZERO)
+            else if(numString[currentElement] == ASCII_ZERO || numString[currentElement] == ' ')
             {
                 numOfZeros++;
             }
@@ -214,9 +231,11 @@ bool mantissa(char numString[], int& numerator, int& denominator)
     //This variable will be passed to numStringCheck to store the length of the mantissa
     int mantissaLength = 0;
 
+    bool isNegative = false;
+
     //ValidateAndGetMantissaLength returns whether or not we have a valid numString so we will only
     //build the mantissa if it is valid
-    if(ValidateAndGetMantissaLength(numString, startOfMantissaPosition, mantissaLength))
+    if(ValidateAndGetMantissaLength(numString, startOfMantissaPosition, mantissaLength, isNegative))
     {
         retval = true;
 
@@ -240,7 +259,18 @@ bool mantissa(char numString[], int& numerator, int& denominator)
         {
             denominator = 10;
         }
+
+        if(isNegative == true)
+        {
+            numerator = numerator * -1;
+        }
     }
+    else
+    {
+        numerator = 0;
+        denominator = 10;
+    }
+    
 
     return retval;
 }
