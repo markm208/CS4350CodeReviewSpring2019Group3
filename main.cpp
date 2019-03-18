@@ -78,6 +78,10 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 	}
     int newNumerator = numOne - numTwo;
     int characteristic = newNumerator/newD;
+    if (characteristic > INT_MAX)
+    {
+        return false;
+    }
 	//figure out how many digits the characteristic has
 	int temp = characteristic;
 	int digitsLeft;
@@ -127,6 +131,10 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		temp--;
 	}
 	//redo initial calculation
+    if ((newNumerator * multiplier)/newD > INT_MAX)
+    {
+        return false;
+    }
 	unsigned long mantissa = (newNumerator * multiplier)/newD;
 	/*The above live is the same calculation we did earlier, except the decimal is moved over to
 	include the right amount of decimal characters.  It is treated as a whole number, but we know that the 
