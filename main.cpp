@@ -3,7 +3,7 @@
 using namespace std;
 
 bool characteristic(char numString[], int&c);
-int TenToThePower(int length);
+int TenToThePower(int exponent);
 int LastWholeNumIndex(char numString[], bool& decimal_found);
 
 int main()
@@ -37,18 +37,23 @@ int main()
 	cout << "C value: " << c << endl << endl;
 
 	//Returns false, integer does not update because integer is too big
-	char number6[] = "1111111111111111.456";
+	char number6[] = "30000000000.456";
 	cout << "True or Not: " << boolalpha << characteristic(number6, c) << endl;
 	cout << "C value: " << c << endl << endl;
 
 	return 0;
 }
 
-//Returns a boolean value if the value in the integer is changed or not, only the characteristic or whole number of the char array is added to c
+//Returns true if all of the characters in an array are digits, +, - or leading spaces. Once a decimal place is found (if there is one), this function will stop checking for proper number syntax and for valid characters.
+//If the function returns true, the integer passed in will be updated.
 bool characteristic(char numString[], int& c)
 {
+	bool still_true = true;
 	int whole_num = 0;
-	bool decimal_found = false; //used to make sure that if there are only mantissa values and a decimal place, the characteristic doesn't return false, but instead returns 0
+
+	//used to make sure that if there are only mantissa values and a decimal place, the characteristic doesn't return false, but instead returns 0
+	bool decimal_found = false; 
+
 	int last_digit_pos = LastWholeNumIndex(numString, decimal_found);
 	bool positive_value = true;
 	bool before_digits = true;
@@ -60,9 +65,11 @@ bool characteristic(char numString[], int& c)
 			before_digits = false;
 			int place_value = TenToThePower(last_digit_pos - i); //Decimal place value for specific char array value
 
-			if ( ((numString[i] - '0') * place_value > INT_MAX - whole_num) || place_value == -1) //char array value being added to whole_num cannot exceed the maximum integer value
+			//char array value being added to whole_num cannot exceed the maximum integer value - also checks if the place value exceeds the INT_MAX in TenToThePower, extra case checked for billions place since 1 & 2 billion can be used
+			if (place_value == -1 || (place_value == 1000000000 && (numString[i] - '0') >= 3) || ((numString[i] - '0') * place_value > INT_MAX - whole_num) )
 			{
-				return false;
+				still_true = false;
+				break;
 			}
 
 			//numString[i] - '0' subtracts the ASCII value of 0 from the numString[i] digit to get the int value
@@ -72,25 +79,27 @@ bool characteristic(char numString[], int& c)
 		{
 			continue;
 		}
-		else if (numString[i] == '-' && before_digits) //accepts - before integer begins, set integer to negative after loop - What does the customer want to happen for double negative cases? Does --x make it a positive, or does it stay negative?
+		else if (numString[i] == '-' && before_digits) //accepts '-' before integer begins, set integer to negative after loop
 		{
 			positive_value = false;
 		}
 		else
 		{
-			return false;
+			still_true = false;
+			break;
 		}
 	}
 
-	if (!decimal_found && before_digits) //checks if only spaces, +, -, or nothing was adding to the char array
-		return false;
-
-	if (!positive_value) //Changes integer to a negative if there was a minus symbol, made outside of loop to avoid changing whole number value when creating the whole number
+	if (!decimal_found && before_digits) //checks if only spaces, +, -, or nothing was added to the char array
+		still_true = false;
+		
+	if (!positive_value && still_true) //Changes integer to a negative if there was a minus symbol, made outside of loop to avoid changing whole number value when creating the whole number
 		whole_num = whole_num *(-1);
 
-	c = whole_num;
+	if(still_true)
+		c = whole_num;
 
-	return true;
+	return still_true;
 }
 
 //Finds the decimal place in the character array if there is one and returns the position right before the decimal. Used to only find the whole number integer values
@@ -111,14 +120,18 @@ int LastWholeNumIndex(char numString[], bool& decimal_found)
 }
 
 //Works similar to the pow function, but only returns 10 to the power of the parameter (used for place values)
-int TenToThePower(int exp)
+int TenToThePower(int exponent)
 {
-	if (exp < 0)
+	if (exponent < 0)
 		return -1;
 
 	int result = 1;
-	for (int i = 0; i < exp; i++)
+	for (int i = 0; i < exponent; i++)
+	{
+		if (INT_MAX / 10 < result)
+			return -1;
 		result *= 10;
+	}
 
 	return result;
 }
