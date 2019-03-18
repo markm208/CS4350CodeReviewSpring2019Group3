@@ -7,10 +7,7 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 void shouldNotConvert(char number[]);
 
 void testMath();
-//void testAdd();
 void testSubtract();
-//void testMultiply();
-//void testDivide();
 
 int main()
 {
@@ -45,7 +42,6 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 			{
 				cout << "expected numerator: " << expectedNumerator << " "
 					<< "actual numerator: " << n << endl;
-
 			}
 
 			if (expectedDenominator != d)
