@@ -87,7 +87,7 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 	//if the conversion from C string to integers can take place
 	if (mantissa(number, n, d))
 	{
-		if (c == expectedCharacteristic && n == expectedNumerator && d == expectedDenominator)
+		if (n == expectedNumerator && d == expectedDenominator)
 		{
 			//test passes, do not print anything on a successful test
 		}
