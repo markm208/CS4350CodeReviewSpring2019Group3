@@ -5,21 +5,103 @@ using namespace std;
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool checkOverflowMult(int num1, int num2);
 bool checkOverflowAdd(int num1, int num2);
-bool testMultiply();
 
+void testCharacteristicAndMantissa();
+void shouldConvert(char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator);
+void shouldNotConvert(char number[]);
+
+void testMath();
+void testAdd();
+void testSubtract();
+void testMultiply();
+void testDivide();
 
 int main()
 {
-    if(testMultiply())
-    {
-        cout << 'y' << endl;
-    }
-    else
-    {
-        cout << 'n' << endl;
-    }
-    
+	//characteristic and mantissa test
+	testCharacteristicAndMantissa();
+	
+	//math function tests
+	testMath();
+
     return 0;
+}
+
+//--
+void shouldConvert(char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator)
+{
+	int c, n, d;
+
+	cout << "Test failed: '" << number << "' "
+			<< "was NOT parsed when it should have been." << endl;
+}
+//--
+void shouldNotConvert(char number[])
+{
+	int c, n, d;
+}
+//--
+void testMath()
+{
+	//add
+	testAdd();
+	testSubtract();
+	testMultiply();
+	testDivide();
+}
+//--
+void testMultiply()
+{
+	const int SHORT_ARRAY_LENGTH = 5;
+	char shortArray[SHORT_ARRAY_LENGTH];
+
+	const int MEDIUM_ARRAY_LENGTH = 10;
+	char mediumArray[MEDIUM_ARRAY_LENGTH];
+
+	const int LARGE_ARRAY_LENGTH = 20;
+	char largeArray[LARGE_ARRAY_LENGTH];
+
+	//should not be enough space in the array for the result
+	if (multiply(INT_MAX, 0, 10, INT_MAX, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
+	{
+		cout << "Error: not enough space in array" << endl;
+	}
+
+	//0 * 0 = "0"
+	multiply(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 0, 0, 10);
+	multiply(0, 0, 10, 0, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 0, 0, 10);
+	multiply(0, 0, 10, 0, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 0, 0, 10);
+
+	//3 * 2 = "6"
+	multiply(3, 0, 10, 2, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 6, 0, 10);
+	multiply(3, 0, 10, 2, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 6, 0, 10);
+	multiply(3, 0, 10, 2, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 6, 0, 10);
+
+	//3 * -1.5 = "-4.5"
+	multiply(3, 0, 10, -1, 1, 2, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, -4, 5, 10);
+	multiply(3, 0, 10, -1, 1, 2, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, -4, 5, 10);
+	multiply(3, 0, 10, -1, 1, 2, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, -4, 5, 10);
+
+	//1.125 * 1.6R = "1.87"
+	multiply(1, 1, 8, 1, 2, 3, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 1, 87, 100);
+
+	//1.125 * 1.6R = "1.875"
+	multiply(1, 1, 8, 1, 2, 3, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 1, 875, 1000);
+
+	//1.125 * 1.6R = "1.875"
+	multiply(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 1, 875, 1000);
 }
 
 // multiply returns a boolean: true if the provided numbers can by multiplied and false if they cannot.
@@ -176,144 +258,4 @@ bool checkOverflowAdd(int num1, int num2)
 		retVal = true;
 	}
 	return retVal;
-}
-
-bool testMultiply() {
-	cout << "Start Testing" << endl;
-	char result[13];
-
-	// These values should all work
-	// Characteristics: -10 through 10
-	// Numerators: 0 through 10
-	// Denominators: 1 through 10
-	for (int c1 = -10; c1 < 11; c1++)
-	{
-		for (int c2 = -10; c2 < 11; c2++)
-		{
-			for (int n1 = 0; n1 < 11; n1++)
-			{
-				for (int n2 = 0; n2 < 11; n2++)
-				{
-					for (int d1 = 1; d1 < 11; d1++)
-					{
-						for (int d2 = 1; d2 < 11; d2++)
-						{
-							if (multiply(c1, n1, d1, c2, n2, d2, result, 12) == false)
-							{
-								return false;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	// These should all pass (negative / negative = positive)
-	// Characteristics: constant
-	// Numerators: -10 through -1
-	// Denominators: -10 through -1
-	for (int n1 = -10; n1 < 0; n1++)
-	{
-		for (int n2 = -10; n2 < 0; n2++)
-		{
-			for (int d1 = -10; d1 < 0; d1++)
-			{
-				for (int d2 = -10; d2 < 0; d2++)
-				{
-					if (multiply(5, n1, d1, 6, n2, d2, result, 12) == false)
-					{
-						return false;
-					}
-				}
-			}
-		}
-	}
-
-	// DIVIDE BY 0 FAILURES
-	if (multiply(4, 5, 0, 7, 8, 9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, 5, 6, 7, 8, 0, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, 5, 0, 7, 8, 0, result, 12) == true)
-	{
-		return false;
-	}
-
-	// NEGATIVE FRACTIONS
-	if (multiply(4, -5, 6, 7, 8, 9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, 5, -6, 7, 8, 9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, 5, 6, 7, -8, 9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, 5, 6, 7, 8, -9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, -5, 6, 7, -8, 9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, 5, -6, 7, 8, -9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, -5, 6, 7, 8, -9, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(4, 5, -6, 7, -8, 9, result, 12) == true)
-	{
-		return false;
-	}
-
-	// Overflow
-	if (multiply(5000, 11, 13, 7000, 6, 9, result, 12) == true)
-	{
-		return false;
-	}
-	// This one is just under INT_MAX
-	if (multiply(5000, 6, 9, 7000, 1, 6, result, 12) == false)
-	{
-		return false;
-	}
-	if (multiply(7, 500, 9, 4, INT_MAX, 7, result, 12) == true)
-	{
-		return false;
-	}
-	if (multiply(7, 8, INT_MAX, 4, 5, 7, result, 12) == true)
-	{
-		return false;
-	}
-
-	// Checking for correct answer
-
-	multiply(1, 1, 2, 3, 0, 2, result, 12);
-	char answer[] = { '4', '.', '5', '\0' };
-	cout << result << ' ' << '=' << '=' << ' ' << answer << endl;
-
-	multiply(-5, 3, 4, 6, 7, 9, result, 12);
-	char ans[] = { '-', '3', '8', '.', '9', '7', '2', '2', '2', '2', '2', '\0' };
-	cout << result << ' ' << '=' << '=' << ' ' << ans << endl;
-
-	multiply(0, 0, 5, INT_MAX, 3, 6, result, 12);
-	char ans2[] = { '0' , '\0'};
-	cout << result << ' ' << '=' << '=' << ' ' << ans2 << endl;
-
-	multiply(-17, 3, 4, -6, 7, 9, result, 12);
-	char ans3[] = { '1', '2', '0', '.', '3', '0', '5', '5', '5', '5', '\0' };
-	cout << result << ' ' << '=' << '=' << ' ' << ans3 << endl;
-
-	return true;
 }
