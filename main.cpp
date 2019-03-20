@@ -58,16 +58,6 @@ void testCharacteristicAndMantissa()
 	shouldConvert("-.456   ", 0, -456, 1000);
 	shouldConvert("   -.456   ", 0, -456, 1000);
 
-	shouldConvert("123456", 123456, 0, 10);
-	shouldConvert("   123456", 123456, 0, 10);
-	shouldConvert("123456   ", 123456, 0, 10);
-	shouldConvert("   123456   ", 123456, 0, 10);
-
-	shouldConvert("-123456", -123456, 0, 10);
-	shouldConvert("   -123456", -123456, 0, 10);
-	shouldConvert("-123456   ", -123456, 0, 10);
-	shouldConvert("   -123456   ", -123456, 0, 10);
-
 	shouldConvert("000123.456", 123, 456, 1000);
 	shouldConvert("123.45600000", 123, 456, 1000);
 	shouldConvert("00000123.45600000", 123, 456, 1000);
