@@ -71,6 +71,16 @@ void testCharacteristicAndMantissa()
 	shouldConvert("-.456   ", 0, -456, 1000);
 	shouldConvert("   -.456   ", 0, -456, 1000);
 
+	shouldConvert("123456", 123456, 0, 10);
+	shouldConvert("   123456", 123456, 0, 10);
+	shouldConvert("123456   ", 123456, 0, 10);
+	shouldConvert("   123456   ", 123456, 0, 10);
+
+	shouldConvert("-123456", -123456, 0, 10);
+	shouldConvert("   -123456", -123456, 0, 10);
+	shouldConvert("-123456   ", -123456, 0, 10);
+	shouldConvert("   -123456   ", -123456, 0, 10);
+
 	shouldConvert("000123.456", 123, 456, 1000);
 	shouldConvert("123.45600000", 123, 456, 1000);
 	shouldConvert("00000123.45600000", 123, 456, 1000);
@@ -105,7 +115,6 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 				cout << "expected characteristic: " << expectedCharacteristic << " "
 					<< "actual characteristic: " << c << endl;
 			}
-			/*
 			if (expectedNumerator != n)
 			{
 			cout << "expected numerator: " << expectedNumerator << " "
@@ -116,7 +125,6 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 			cout << "expected denominator: " << expectedDenominator << " "
 			<< "actual denominator: " << d << endl;
 			}
-			*/
 		}
 	}
 	else
@@ -136,6 +144,68 @@ void shouldNotConvert(char number[])
 		cout << "Test failed: '" << number << "' "
 			<< "was parsed when it should NOT have been." << endl;
 	}
+}
+
+//--
+void testMath()
+{
+	//add
+	testMultiply();
+}
+
+//--
+void testMultiply()
+{
+	const int SHORT_ARRAY_LENGTH = 5;
+	char shortArray[SHORT_ARRAY_LENGTH];
+
+	const int MEDIUM_ARRAY_LENGTH = 10;
+	char mediumArray[MEDIUM_ARRAY_LENGTH];
+
+	const int LARGE_ARRAY_LENGTH = 20;
+	char largeArray[LARGE_ARRAY_LENGTH];
+
+	//should not be enough space in the array for the result
+	if (multiply(INT_MAX, 0, 10, INT_MAX, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
+	{
+		cout << "Error: not enough space in array" << endl;
+	}
+
+	//0 * 0 = "0"
+	multiply(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 0, 0, 10);
+	multiply(0, 0, 10, 0, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 0, 0, 10);
+	multiply(0, 0, 10, 0, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 0, 0, 10);
+
+	//3 * 2 = "6"
+	multiply(3, 0, 10, 2, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 6, 0, 10);
+	multiply(3, 0, 10, 2, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 6, 0, 10);
+	multiply(3, 0, 10, 2, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 6, 0, 10);
+
+	//3 * -1.5 = "-4.5"
+	multiply(3, 0, 10, -1, 1, 2, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, -4, 5, 10);
+	multiply(3, 0, 10, -1, 1, 2, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, -4, 5, 10);
+	multiply(3, 0, 10, -1, 1, 2, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, -4, 5, 10);
+
+	//1.125 * 1.6R = "1.87"
+	multiply(1, 1, 8, 1, 2, 3, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 1, 87, 100);
+
+	//1.125 * 1.6R = "1.875"
+	multiply(1, 1, 8, 1, 2, 3, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 1, 875, 1000);
+
+	//1.125 * 1.6R = "1.875"
+	multiply(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 1, 875, 1000);
 }
 
 //This function will go through the numString and check to see if there are any
@@ -228,68 +298,6 @@ bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition
 	}
 
 	return retval;
-}
-
-//--
-void testMath()
-{
-	//add
-	testMultiply();
-}
-
-//--
-void testMultiply()
-{
-	const int SHORT_ARRAY_LENGTH = 5;
-	char shortArray[SHORT_ARRAY_LENGTH];
-
-	const int MEDIUM_ARRAY_LENGTH = 10;
-	char mediumArray[MEDIUM_ARRAY_LENGTH];
-
-	const int LARGE_ARRAY_LENGTH = 20;
-	char largeArray[LARGE_ARRAY_LENGTH];
-
-	//should not be enough space in the array for the result
-	if (multiply(INT_MAX, 0, 10, INT_MAX, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
-	{
-		cout << "Error: not enough space in array" << endl;
-	}
-
-	//0 * 0 = "0"
-	multiply(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
-	shouldConvert(shortArray, 0, 0, 10);
-	multiply(0, 0, 10, 0, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
-	shouldConvert(mediumArray, 0, 0, 10);
-	multiply(0, 0, 10, 0, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
-	shouldConvert(largeArray, 0, 0, 10);
-
-	//3 * 2 = "6"
-	multiply(3, 0, 10, 2, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
-	shouldConvert(shortArray, 6, 0, 10);
-	multiply(3, 0, 10, 2, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
-	shouldConvert(mediumArray, 6, 0, 10);
-	multiply(3, 0, 10, 2, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
-	shouldConvert(largeArray, 6, 0, 10);
-
-	//3 * -1.5 = "-4.5"
-	multiply(3, 0, 10, -1, 1, 2, shortArray, SHORT_ARRAY_LENGTH);
-	shouldConvert(shortArray, -4, 5, 10);
-	multiply(3, 0, 10, -1, 1, 2, mediumArray, MEDIUM_ARRAY_LENGTH);
-	shouldConvert(mediumArray, -4, 5, 10);
-	multiply(3, 0, 10, -1, 1, 2, largeArray, LARGE_ARRAY_LENGTH);
-	shouldConvert(largeArray, -4, 5, 10);
-
-	//1.125 * 1.6R = "1.87"
-	multiply(1, 1, 8, 1, 2, 3, shortArray, SHORT_ARRAY_LENGTH);
-	shouldConvert(shortArray, 1, 87, 100);
-
-	//1.125 * 1.6R = "1.875"
-	multiply(1, 1, 8, 1, 2, 3, mediumArray, MEDIUM_ARRAY_LENGTH);
-	shouldConvert(mediumArray, 1, 875, 1000);
-
-	//1.125 * 1.6R = "1.875"
-	multiply(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
-	shouldConvert(largeArray, 1, 875, 1000);
 }
 
 bool mantissa(char numString[], int& numerator, int& denominator)
@@ -546,79 +554,79 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 	return true;
 }
 
-	//Finds the decimal place in the character array if there is one and returns the position right before the decimal. Used to only find the whole number integer values
-	int LastWholeNumIndex(const char numString[], bool& decimal_found)
+//Finds the decimal place in the character array if there is one and returns the position right before the decimal. Used to only find the whole number integer values
+int LastWholeNumIndex(const char numString[], bool& decimal_found)
+{
+	int pos = 0;
+
+	for (pos; numString[pos] != '\0'; pos++)
 	{
-		int pos = 0;
-
-		for (pos; numString[pos] != '\0'; pos++)
+		if (numString[pos] == '.')
 		{
-			if (numString[pos] == '.')
-			{
-				decimal_found = true;
-				break;
-			}
+			decimal_found = true;
+			break;
 		}
-
-		return pos - 1;
 	}
 
-	//Added another function so that spaces could be included after the characteristic, when first reading through the assignment, I thought that would be invalid.
-	int LastIntegerFound(const char numString[])
+	return pos - 1;
+}
+
+//Added another function so that spaces could be included after the characteristic, when first reading through the assignment, I thought that would be invalid.
+int LastIntegerFound(const char numString[])
+{
+	int pos = 0;
+	bool before_digits = true;
+	for (pos; numString[pos] != '\0'; pos++)
 	{
-		int pos = 0;
-		bool before_digits = true;
-		for (pos; numString[pos] != '\0'; pos++)
+		if (isdigit(numString[pos]))
 		{
-			if (isdigit(numString[pos]))
-			{
-				before_digits = false;
-			}
-			else if (!isdigit(numString[pos]) && before_digits)
-			{
-				continue;
-			}
-			else if (!isdigit(numString[pos] && !before_digits))
-			{
-				break;
-			}
+			before_digits = false;
 		}
-		return pos - 1;
+		else if (!isdigit(numString[pos]) && before_digits)
+		{
+			continue;
+		}
+		else if (!isdigit(numString[pos] && !before_digits))
+		{
+			break;
+		}
 	}
+	return pos - 1;
+}
 
 
-	bool checkOverflowMult(int num1, int num2)
+bool checkOverflowMult(int num1, int num2)
+{
+	bool retVal = false;
+	if (num1 != 0 && abs(INT_MAX / num1) <= abs(num2))
 	{
-		bool retVal = false;
-		if (num1 != 0 && abs(INT_MAX / num1) <= abs(num2))
-		{
-			retVal = true;
-		}
-		return retVal;
+		retVal = true;
 	}
+	return retVal;
+}
 
-	bool checkOverflowAdd(int num1, int num2)
+bool checkOverflowAdd(int num1, int num2)
+{
+	bool retVal = false;
+	if (INT_MAX - abs(num1) < abs(num2))
 	{
-		bool retVal = false;
-		if (INT_MAX - abs(num1) < abs(num2))
-		{
-			retVal = true;
-		}
-		return retVal;
+		retVal = true;
 	}
-	//Works similar to the pow function, but only returns 10 to the power of the parameter (used for place values)
-	int TenToThePower(int exponent)
+	return retVal;
+}
+//Works similar to the pow function, but only returns 10 to the power of the parameter (used for place values)
+int TenToThePower(int exponent)
+{
+	if (exponent < 0)
+		return -1;
+
+	int result = 1;
+	for (int i = 0; i < exponent; i++)
 	{
-		if (exponent < 0)
+		if (2147483647 / 10 < result)
 			return -1;
-
-		int result = 1;
-		for (int i = 0; i < exponent; i++)
-		{
-			if (2147483647 / 10 < result)
-				return -1;
-			result *= 10;
-		}
-
-		return result;
+		result *= 10;
 	}
+
+	return result;
+}
