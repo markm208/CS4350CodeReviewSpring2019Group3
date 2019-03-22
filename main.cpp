@@ -117,13 +117,13 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 			}
 			if (expectedNumerator != n)
 			{
-			cout << "expected numerator: " << expectedNumerator << " "
-			<< "actual numerator: " << n << endl;
+				cout << "expected numerator: " << expectedNumerator << " "
+					<< "actual numerator: " << n << endl;
 			}
 			if (expectedDenominator != d)
 			{
-			cout << "expected denominator: " << expectedDenominator << " "
-			<< "actual denominator: " << d << endl;
+				cout << "expected denominator: " << expectedDenominator << " "
+					<< "actual denominator: " << d << endl;
 			}
 		}
 	}
