@@ -181,12 +181,12 @@ void testSubtract()
 	}
 
 	//0 - 0 = "0"
-	/*subtract(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	subtract(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
 	shouldConvert(shortArray, 0, 0, 10);
 	subtract(0, 0, 10, 0, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
 	shouldConvert(mediumArray, 0, 0, 10);
 	subtract(0, 0, 10, 0, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
-	shouldConvert(largeArray, 0, 0, 10);*/
+	shouldConvert(largeArray, 0, 0, 10);
 
 	////2 - 1 = "1"
 	subtract(2, 0, 10, 1, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
@@ -234,6 +234,8 @@ void testSubtract()
 //new functions go here
 bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
+	len = len - 1;
+
 	if (c1 >= INT_MAX)
 	{
 		return false;
@@ -245,9 +247,25 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 	bool isNegative = false;//used at the end to add the negative
 	int swapVal = 0;
 	bool retVal = true;
+	int numOne = 0;
+	int numTwo = 0;
 	//turn the two fractions into improper fractions
-	int numOne = c1 * d1 + n1;
-	int numTwo = c2 * d2 + n2;
+	if (c1 >= 0)
+	{
+		numOne = (c1 * d1) + n1;
+	}
+	else
+	{
+		numOne = (c1 * d1) - n1;
+	}
+	if(c2 >= 0)
+	{
+		numTwo = (c2 * d2) + n2;
+	}
+	else
+	{
+		numTwo = (c2 * d2) - n2;
+	}
 	int charCounter = 0;
 
 	int newD;
@@ -320,39 +338,50 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 			}
 			charCounter++;
 		}
+		if (n1 == 0 && n2 == 0)
+		{
+			result[charCounter] = char('\0');
+			if (isNegative)
+			{
+				/*I was having trouble with the - sign being overridden
+				so I moved this part to the end to make sure that doesn't happen.*/
+				result[0] = '-';
+			}
+			return retVal;
+		}
+
 		//determine how many spaces I have left to work with
 		digitsLeft = len - (charCounter);
 	}
-	//create a multiplier digit that we will use later on line 326
-	int multiplier = 1;
-	temp = digitsLeft;
-	while (temp != 0)
+	
+	int remaining = newNumerator % newD;
+	// If there is a decimal place...
+	if (remaining != 0)
 	{
-		multiplier = multiplier * 10;
-		temp--;
-	}
-	//redo initial calculation
-	if ((newNumerator * multiplier) / newD > INT_MAX)
-	{
-		return false;
-	}
-	unsigned long mantissa = (newNumerator * multiplier) / newD;
-	/*The above live is the same calculation we did earlier, except the decimal is moved over to
-	include the right amount of decimal characters.  It is treated as a whole number, but we know that the
-	extra digits are our missing decimal numbers*/
 
-	unsigned long mantissaTemp = mantissa;
-	//adds the rest of the digits to the array
-	for (int i = 0; i < len - charCounter; i++)
-	{
-		//gets the right-most digit of our new mantissa integer
-		int remainder = mantissaTemp % 10;
-		//adds a digit - starting at the end and moving to the left 
-		result[len - i - 1] = char('0' + remainder);
-		mantissaTemp = mantissaTemp / 10;
-	}
-	result[len] = char('\0');
+		// If there is no remaining then there is nothing left for the decimal place except zeros
+		while (remaining != 0)
+		{
+			// To access the next decimal point I multiply the numerator by ten then divide by d
+			// Because numerator and d are integers it will only provide the characteristic
+			remaining *= 10;
+			result[charCounter] = remaining / newD + '0';
+			charCounter++;
+			// By replacing the numerator with numerator%d it removes the characteristic
+			remaining %= newD;
 
+			// If the numerator at this point is equal to 0 the decimal point has ended.
+			if (charCounter == len)
+			{
+				// Can't have string end only at end of array because
+				//  there would be garbage after the product before the string ends
+				break;
+			}
+		}
+	}
+	// Can't have string end only at end of array because
+	//  there would be garbage after the product before the string ends
+	result[charCounter] = '\0';
 	if (isNegative)
 	{
 		/*I was having trouble with the - sign being overridden
