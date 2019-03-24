@@ -5,6 +5,7 @@ using namespace std;
 
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
+bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int length);
 bool checkOverflowMult(int num1, int num2);
 bool checkOverflowAdd(int num1, int num2);
 
@@ -261,7 +262,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 	else
 	{
 		numTwo = (c2 * d2) - n2;
-	}
+	}	
 	int charCounter = 0;
 
 	int newD;
@@ -349,8 +350,8 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		//determine how many spaces I have left to work with
 		digitsLeft = len - (charCounter);
 	}
-	
-	int remaining = newNumerator % newD;
+
+int remaining = newNumerator % newD;
 	// If there is a decimal place...
 	if (remaining != 0)
 	{
