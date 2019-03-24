@@ -140,19 +140,175 @@ bool add(int c1,int n1, int d1,int c2,int n2, int d2, char* result,int len)
     return true;
 }
 
+bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
+bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
+bool checkOverflowMult(int num1, int num2);
+bool checkOverflowAdd(int num1, int num2);
+
+const int ASCII_ZERO = 48;
+const int ASCII_NINE = 57;
+
+bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition, int& mantissaLength, bool& isNegative);
+bool mantissa(const char numString[], int& numerator, int& denominator);
+void testCharacteristicAndMantissa();
+void shouldConvert(const char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator);
+void shouldNotConvert(const char number[]);
+
+bool characteristic(const char numString[], int&c);
+int TenToThePower(int exponent);
+int LastWholeNumIndex(const char numString[], bool& decimal_found);
+int LastIntegerFound(const char numString[]);
+
+void testSubtract();
+void testMath();
+void testMultiply();
+
 int main()
 {
-	int SHORT_ARRAY_LENGTH = 5;
+	//characteristic and mantissa test
+	testCharacteristicAndMantissa();
+
+	//math function tests
+	testMath();
+
+	return 0;
+}
+
+void testCharacteristicAndMantissa()
+{
+	shouldConvert("123.456", 123, 456, 1000);
+	shouldConvert("    123.456", 123, 456, 1000);
+	shouldConvert("123.456    ", 123, 456, 1000);
+	shouldConvert("    123.456    ", 123, 456, 1000);
+
+	shouldConvert("+123.456", 123, 456, 1000);
+	shouldConvert("   +123.456", 123, 456, 1000);
+	shouldConvert("+123.456   ", 123, 456, 1000);
+	shouldConvert("   +123.456   ", 123, 456, 1000);
+
+	shouldConvert("-123.456", -123, 456, 1000);
+	shouldConvert("   -123.456", -123, 456, 1000);
+	shouldConvert("-123.456   ", -123, 456, 1000);
+	shouldConvert("    -123.456   ", -123, 456, 1000);
+
+	shouldConvert("0.456", 0, 456, 1000);
+	shouldConvert("   0.456", 0, 456, 1000);
+	shouldConvert("0.456   ", 0, 456, 1000);
+	shouldConvert("   0.456   ", 0, 456, 1000);
+
+	shouldConvert("-0.456", 0, -456, 1000);
+	shouldConvert("   -0.456", 0, -456, 1000);
+	shouldConvert("-0.456   ", 0, -456, 1000);
+	shouldConvert("   -0.456   ", 0, -456, 1000);
+
+	shouldConvert(".456", 0, 456, 1000);
+	shouldConvert("    .456", 0, 456, 1000);
+	shouldConvert(".456   ", 0, 456, 1000);
+	shouldConvert("   .456   ", 0, 456, 1000);
+
+	shouldConvert("-.456", 0, -456, 1000);
+	shouldConvert("    -.456", 0, -456, 1000);
+	shouldConvert("-.456   ", 0, -456, 1000);
+	shouldConvert("   -.456   ", 0, -456, 1000);
+
+	shouldConvert("123456", 123456, 0, 10);
+	shouldConvert("   123456", 123456, 0, 10);
+	shouldConvert("123456   ", 123456, 0, 10);
+	shouldConvert("   123456   ", 123456, 0, 10);
+
+	shouldConvert("-123456", -123456, 0, 10);
+	shouldConvert("   -123456", -123456, 0, 10);
+	shouldConvert("-123456   ", -123456, 0, 10);
+	shouldConvert("   -123456   ", -123456, 0, 10);
+
+	shouldConvert("000123.456", 123, 456, 1000);
+	shouldConvert("123.45600000", 123, 456, 1000);
+	shouldConvert("00000123.45600000", 123, 456, 1000);
+
+	shouldConvert("-000123.456", -123, 456, 1000);
+	shouldConvert("-123.45600000", -123, 456, 1000);
+	shouldConvert("-00000123.45600000", -123, 456, 1000);
+
+	shouldConvert("123.00000456", 123, 456, 100000000);
+	shouldConvert("-123.00000456", -123, 456, 100000000);
+}
+//--
+void shouldConvert(const char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator)
+{
+	int c, n, d;
+
+	//if the conversion from C string to integers can take place
+	if (characteristic(number, c) && mantissa(number, n, d))
+	{
+		if (c == expectedCharacteristic && n == expectedNumerator && d == expectedDenominator)
+		{
+			//test passes, do not print anything on a successful test
+		}
+		else
+		{
+			cout << "Test failed: '" << number << "' "
+				<< "was parsed but did not produce the expected results" << endl;
+
+
+			if (expectedCharacteristic != c)
+			{
+				cout << "expected characteristic: " << expectedCharacteristic << " "
+					<< "actual characteristic: " << c << endl;
+			}
+			if (expectedNumerator != n)
+			{
+				cout << "expected numerator: " << expectedNumerator << " "
+					<< "actual numerator: " << n << endl;
+			}
+			if (expectedDenominator != d)
+			{
+				cout << "expected denominator: " << expectedDenominator << " "
+					<< "actual denominator: " << d << endl;
+			}
+		}
+	}
+	else
+	{
+		cout << "Test failed: '" << number << "' "
+			<< "was NOT parsed when it should have been." << endl;
+	}
+}
+//--
+void shouldNotConvert(const char number[])
+{
+	int c, n, d;
+
+	//if the conversion from C string to integers can take place
+	if (characteristic(number, c) && mantissa(number, n, d))
+	{
+		cout << "Test failed: '" << number << "' "
+			<< "was parsed when it should NOT have been." << endl;
+	}
+}
+
+//--
+void testMath()
+{
+	//add
+	testMultiply();
+	testSubtract();
+}
+//--
+
+//--
+void testSubtract()
+{
+	const int SHORT_ARRAY_LENGTH = 5;
 	char shortArray[SHORT_ARRAY_LENGTH];
 
-	int MEDIUM_ARRAY_LENGTH = 10;
+	const int MEDIUM_ARRAY_LENGTH = 10;
 	char mediumArray[MEDIUM_ARRAY_LENGTH];
 
-	int LARGE_ARRAY_LENGTH = 20;
+	const int LARGE_ARRAY_LENGTH = 20;
 	char largeArray[LARGE_ARRAY_LENGTH];
 
 	//should not be enough space in the array for the result
-	if (add(INT8_MAX, 0, 10, INT8_MAX, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
+	if (subtract(INT_MIN, 0, 10, INT_MAX, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
 	{
 		cout << "Error: not enough space in array" << endl;
 	}
@@ -196,6 +352,42 @@ int main()
 	add(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
 	//can't use the convert function because the num/denom would overflow
 	char expectedResult[] = "2.79166666666666666";
+	//0 - 0 = "0"
+	/*subtract(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 0, 0, 10);
+	subtract(0, 0, 10, 0, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 0, 0, 10);
+	subtract(0, 0, 10, 0, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 0, 0, 10);*/
+
+	////2 - 1 = "1"
+	subtract(2, 0, 10, 1, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 1, 0, 10);
+	subtract(2, 0, 10, 1, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 1, 0, 10);
+	subtract(2, 0, 10, 1, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 1, 0, 10);
+
+	////1 - -1.5 = "2.5"
+	subtract(1, 0, 10, -1, 1, 2, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 2, 5, 10);
+	subtract(1, 0, 10, -1, 1, 2, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 2, 5, 10);
+	subtract(1, 0, 10, -1, 1, 2, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 2, 5, 10);
+
+	////1.125 - 1.6R = "-.54"
+	subtract(1, 1, 8, 1, 2, 3, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 0, -54, 100);
+
+	////1.125 - 1.6R = "-.5416666"
+	subtract(1, 1, 8, 1, 2, 3, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 0, -5416666, 10000000);
+
+	////1.125 - 1.6R = "-.54166666666666666"
+	subtract(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
+	////can't use the convert function because the num/denom would overflow
+	char expectedResult[] = "-.54166666666666666";
 	for (int i = 0; i < LARGE_ARRAY_LENGTH; i++)
 	{
 		if (expectedResult[i] != largeArray[i])
@@ -209,4 +401,39 @@ int main()
     return 0;
 }
 
-//new functions go here
+
+bool checkOverflowMult(int num1, int num2)
+{
+	bool retVal = false;
+	if (num1 != 0 && abs(INT_MAX / num1) <= abs(num2))
+	{
+		retVal = true;
+	}
+	return retVal;
+}
+
+bool checkOverflowAdd(int num1, int num2)
+{
+	bool retVal = false;
+	if (INT_MAX - abs(num1) < abs(num2))
+	{
+		retVal = true;
+	}
+	return retVal;
+}
+//Works similar to the pow function, but only returns 10 to the power of the parameter (used for place values)
+int TenToThePower(int exponent)
+{
+	if (exponent < 0)
+		return -1;
+
+	int result = 1;
+	for (int i = 0; i < exponent; i++)
+	{
+		if (2147483647 / 10 < result)
+			return -1;
+		result *= 10;
+	}
+
+	return result;
+}
