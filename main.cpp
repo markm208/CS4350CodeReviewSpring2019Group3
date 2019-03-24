@@ -291,13 +291,76 @@ void shouldNotConvert(const char number[])
 //--
 void testMath()
 {
-	//add
+	testAdd();
 	testMultiply();
 	testSubtract();
 	testDivide();
 }
 //--
+void testAdd()
+{
+	const int SHORT_ARRAY_LENGTH = 5;
+	char shortArray[SHORT_ARRAY_LENGTH];
 
+	const int MEDIUM_ARRAY_LENGTH = 10;
+	char mediumArray[MEDIUM_ARRAY_LENGTH];
+
+	const int LARGE_ARRAY_LENGTH = 20;
+	char largeArray[LARGE_ARRAY_LENGTH];
+
+	//should not be enough space in the array for the result
+	if (add(INT_MAX, 0, 10, INT_MAX, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
+	{
+		cout << "Error: not enough space in array" << endl;
+	}
+
+	//0 + 0 = "0"
+	add(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 0, 0, 10);
+	add(0, 0, 10, 0, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 0, 0, 10);
+	add(0, 0, 10, 0, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 0, 0, 10);
+
+	//1 + 1 = "2"
+	add(1, 0, 10, 1, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 2, 0, 10);
+	add(1, 0, 10, 1, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 2, 0, 10);
+	add(1, 0, 10, 1, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 2, 0, 10);
+
+	//1 + -1.5 = "-.5"
+	add(1, 0, 10, -1, 1, 2, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 0, -5, 10);
+	add(1, 0, 10, -1, 1, 2, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 0, -5, 10);
+	add(1, 0, 10, -1, 1, 2, largeArray, LARGE_ARRAY_LENGTH);
+	shouldConvert(largeArray, 0, -5, 10);
+
+	//1.125 + 1.6R = "2.79"
+	add(1, 1, 8, 1, 2, 3, shortArray, SHORT_ARRAY_LENGTH);
+	shouldConvert(shortArray, 2, 79, 100);
+
+	//1.125 + 1.6R = "2.7916666"
+	add(1, 1, 8, 1, 2, 3, mediumArray, MEDIUM_ARRAY_LENGTH);
+	shouldConvert(mediumArray, 2, 7916666, 10000000);
+
+	//1.125 + 1.6R = "2.79166666666666666"
+	add(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
+	//can't use the convert function because the num/denom would overflow
+	char expectedResult[] = "2.79166666666666666";
+	for (int i = 0; i < LARGE_ARRAY_LENGTH; i++)
+	{
+		if (expectedResult[i] != largeArray[i])
+		{
+			cout << "Error: mismatch in C strings in add()." << endl
+				<< "Expected: " << expectedResult << " "
+				<< "Actual: " << largeArray
+				<< endl;
+		}
+	}
+}
 //--
 void testSubtract()
 {
@@ -401,7 +464,6 @@ void testSubtract()
 				<< endl;
 		}
 	}
-    return 0;
 }
 
 //new functions go here
