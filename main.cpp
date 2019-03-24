@@ -2,10 +2,7 @@
 
 using namespace std;
 
-<<<<<<< HEAD
-bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int length);
 
-=======
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool checkOverflowMult(int num1, int num2);
@@ -16,7 +13,6 @@ const int ASCII_NINE = 57;
 
 bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition, int& mantissaLength, bool& isNegative);
 bool mantissa(const char numString[], int& numerator, int& denominator);
->>>>>>> main_update
 void testCharacteristicAndMantissa();
 void shouldConvert(const char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator);
 void shouldNotConvert(const char number[]);
