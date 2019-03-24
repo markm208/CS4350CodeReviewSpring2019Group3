@@ -26,6 +26,7 @@ int LastIntegerFound(const char numString[]);
 void testSubtract();
 void testMath();
 void testMultiply();
+void testDivide();
 
 int main()
 {
@@ -156,6 +157,7 @@ void testMath()
 	//add
 	testMultiply();
 	testSubtract();
+	testDivide();
 }
 //--
 
@@ -869,6 +871,11 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
 {
     bool retVal = true;
 
+	if(c1 == INT_MAX || c2 == INT_MAX)
+	{
+		retVal = false;
+	}
+
     //check to make sure denominators are not 0
 	if (d1 == 0 || d2 == 0)
 	{
@@ -932,8 +939,83 @@ bool divide(int c1, int n1, int d1, int c2, int n2, int d2, char answer[], int l
         }
 
         //add null char to end of array
-        answer[pos++] = '\0';
+        answer[length - 1] = '\0';
     }
 
     return retVal;
+}
+
+void testDivide()
+{
+
+		const int SHORT_ARRAY_LENGTH = 5;
+		char shortArray[SHORT_ARRAY_LENGTH];
+	
+		const int MEDIUM_ARRAY_LENGTH = 10;
+		char mediumArray[MEDIUM_ARRAY_LENGTH];
+	
+		const int LARGE_ARRAY_LENGTH = 20;
+		char largeArray[LARGE_ARRAY_LENGTH];
+	
+		//should not be enough space in the array for the result
+		if (divide(INT_MAX, 0, 10, 1, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
+		{
+			cout << "Error: not enough space in array" << endl;
+		}
+	
+		//cannot divide by zero
+		if (divide(10, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH))
+		{
+			cout << "Error: cannot divide by zero" << endl;
+		}
+	
+		//0 / 1 = "0"
+		divide(0, 0, 10, 1, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+		shouldConvert(shortArray, 0, 0, 10);
+		divide(0, 0, 10, 1, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+		shouldConvert(mediumArray, 0, 0, 10);
+		divide(0, 0, 10, 1, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+		shouldConvert(largeArray, 0, 0, 10);
+	
+		//6 / 3 = "2"
+		divide(6, 0, 10, 3, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+		shouldConvert(shortArray, 2, 0, 10);
+		divide(6, 0, 10, 3, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
+		shouldConvert(mediumArray, 2, 0, 10);
+		divide(6, 0, 10, 3, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
+		shouldConvert(largeArray, 2, 0, 10);
+	
+		//1 / -1.5 = "-.66"
+		divide(1, 0, 10, -1, 1, 2, shortArray, SHORT_ARRAY_LENGTH);
+		shouldConvert(shortArray, 0, -66, 100);
+	
+		//1 / -1.5 = "-.6666666"
+		divide(1, 0, 10, -1, 1, 2, mediumArray, MEDIUM_ARRAY_LENGTH);
+		shouldConvert(mediumArray, 0, -6666666, 10000000);
+	
+		//1 / -1.5 = "-.66666666666666666"
+		divide(1, 0, 10, -1, 1, 2, largeArray, LARGE_ARRAY_LENGTH);
+		char expectedResult1[] = "-0.66666666666666666";
+		for (int i = 0; i < LARGE_ARRAY_LENGTH; i++)
+		{
+			if (expectedResult1[i] != largeArray[i])
+			{
+				cout << "Error: mismatch in C strings in divide()." << endl
+					<< "Expected: " << expectedResult1 << " "
+					<< "Actual: " << largeArray
+					<< endl;
+			}
+		}
+	
+		//1.125 / 1.6R = "0.67"
+		divide(1, 1, 8, 1, 2, 3, shortArray, SHORT_ARRAY_LENGTH);
+		shouldConvert(shortArray, 0, 67, 100);
+	
+		//1.125 / 1.6R = "0.675"
+		divide(1, 1, 8, 1, 2, 3, mediumArray, MEDIUM_ARRAY_LENGTH);
+		shouldConvert(mediumArray, 0, 675, 1000);
+	
+		//1.125 / 1.6R = "0.675"
+		divide(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
+		shouldConvert(largeArray, 0, 675, 1000);
 }
