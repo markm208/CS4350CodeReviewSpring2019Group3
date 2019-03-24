@@ -3,6 +3,7 @@
 using namespace std;
 
 bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
+bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len);
 bool checkOverflowMult(int num1, int num2);
 bool checkOverflowAdd(int num1, int num2);
 
@@ -10,16 +11,17 @@ const int ASCII_ZERO = 48;
 const int ASCII_NINE = 57;
 
 bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition, int& mantissaLength, bool& isNegative);
-bool mantissa(char numString[], int& numerator, int& denominator);
+bool mantissa(const char numString[], int& numerator, int& denominator);
 void testCharacteristicAndMantissa();
-void shouldConvert(char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator);
-void shouldNotConvert(char number[]);
+void shouldConvert(const char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator);
+void shouldNotConvert(const char number[]);
 
-bool characteristic(char numString[], int&c);
+bool characteristic(const char numString[], int&c);
 int TenToThePower(int exponent);
 int LastWholeNumIndex(const char numString[], bool& decimal_found);
 int LastIntegerFound(const char numString[]);
 
+void testSubtract();
 void testMath();
 void testMultiply();
 
@@ -93,7 +95,7 @@ void testCharacteristicAndMantissa()
 	shouldConvert("-123.00000456", -123, 456, 100000000);
 }
 //--
-void shouldConvert(char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator)
+void shouldConvert(const char number[], int expectedCharacteristic, int expectedNumerator, int expectedDenominator)
 {
 	int c, n, d;
 
@@ -134,7 +136,7 @@ void shouldConvert(char number[], int expectedCharacteristic, int expectedNumera
 	}
 }
 //--
-void shouldNotConvert(char number[])
+void shouldNotConvert(const char number[])
 {
 	int c, n, d;
 
@@ -151,7 +153,7 @@ void testMath()
 {
 	//add
 	testMultiply();
-	testSubtract();	
+	testSubtract();
 }
 //--
 
@@ -174,14 +176,14 @@ void testSubtract()
 	}
 
 	//0 - 0 = "0"
-	subtract(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
+	/*subtract(0, 0, 10, 0, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
 	shouldConvert(shortArray, 0, 0, 10);
 	subtract(0, 0, 10, 0, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
 	shouldConvert(mediumArray, 0, 0, 10);
 	subtract(0, 0, 10, 0, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
-	shouldConvert(largeArray, 0, 0, 10);
+	shouldConvert(largeArray, 0, 0, 10);*/
 
-	//2 - 1 = "1"
+	////2 - 1 = "1"
 	subtract(2, 0, 10, 1, 0, 10, shortArray, SHORT_ARRAY_LENGTH);
 	shouldConvert(shortArray, 1, 0, 10);
 	subtract(2, 0, 10, 1, 0, 10, mediumArray, MEDIUM_ARRAY_LENGTH);
@@ -189,7 +191,7 @@ void testSubtract()
 	subtract(2, 0, 10, 1, 0, 10, largeArray, LARGE_ARRAY_LENGTH);
 	shouldConvert(largeArray, 1, 0, 10);
 
-	//1 - -1.5 = "2.5"
+	////1 - -1.5 = "2.5"
 	subtract(1, 0, 10, -1, 1, 2, shortArray, SHORT_ARRAY_LENGTH);
 	shouldConvert(shortArray, 2, 5, 10);
 	subtract(1, 0, 10, -1, 1, 2, mediumArray, MEDIUM_ARRAY_LENGTH);
@@ -197,17 +199,17 @@ void testSubtract()
 	subtract(1, 0, 10, -1, 1, 2, largeArray, LARGE_ARRAY_LENGTH);
 	shouldConvert(largeArray, 2, 5, 10);
 
-	//1.125 - 1.6R = "-.54"
+	////1.125 - 1.6R = "-.54"
 	subtract(1, 1, 8, 1, 2, 3, shortArray, SHORT_ARRAY_LENGTH);
 	shouldConvert(shortArray, 0, -54, 100);
 
-	//1.125 - 1.6R = "-.5416666"
+	////1.125 - 1.6R = "-.5416666"
 	subtract(1, 1, 8, 1, 2, 3, mediumArray, MEDIUM_ARRAY_LENGTH);
 	shouldConvert(mediumArray, 0, -5416666, 10000000);
 
-	//1.125 - 1.6R = "-.54166666666666666"
+	////1.125 - 1.6R = "-.54166666666666666"
 	subtract(1, 1, 8, 1, 2, 3, largeArray, LARGE_ARRAY_LENGTH);
-	//can't use the convert function because the num/denom would overflow
+	////can't use the convert function because the num/denom would overflow
 	char expectedResult[] = "-.54166666666666666";
 	for (int i = 0; i < LARGE_ARRAY_LENGTH; i++)
 	{
@@ -227,26 +229,34 @@ void testSubtract()
 //new functions go here
 bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int len)
 {
+	if (c1 >= INT_MAX)
+	{
+		return false;
+	}
+	if (c1 <= INT_MIN)
+	{
+		return false;
+	}
 	bool isNegative = false;//used at the end to add the negative
 	int swapVal = 0;
 	bool retVal = true;
 	//turn the two fractions into improper fractions
-    int numOne = c1*d1 + n1;
-    int numTwo = c2*d2 + n2;
+	int numOne = c1 * d1 + n1;
+	int numTwo = c2 * d2 + n2;
 	int charCounter = 0;
-	
-    int newD;
+
+	int newD;
 	//if we don't have common denominators
-    if (d1 != d2)
-    {
-        numOne = numOne*d2;
-        numTwo = numTwo*d1;
-        newD = d1*d2;
-    }
-    else
-    {
-        newD = d1;
-    }
+	if (d1 != d2)
+	{
+		numOne = numOne * d2;
+		numTwo = numTwo * d1;
+		newD = d1 * d2;
+	}
+	else
+	{
+		newD = d1;
+	}
 	//if the result is going to be negative, switch the values and will tack on a negative sign later
 	if (numTwo > numOne)
 	{
@@ -261,13 +271,13 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		charCounter++;
 	}
 
-	
-    int newNumerator = numOne - numTwo;
-    int characteristic = newNumerator/newD;
-    if (characteristic > INT_MAX)
-    {
-        return false;
-    }
+
+	int newNumerator = numOne - numTwo;
+	int characteristic = newNumerator / newD;
+	if (characteristic > INT_MAX)
+	{
+		return false;
+	}
 	//figure out how many digits the characteristic has
 	int temp = characteristic;
 	int digitsLeft;
@@ -294,12 +304,12 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		else
 		{
 			result[charCounter] = '.';
-			
+
 			//add the characteristic digits to the array
 			for (int i = charCounter; i > 0; i--)
 			{
 				int remainder = temp % 10;
-				result[i - 1] = char('0'+remainder);
+				result[i - 1] = char('0' + remainder);
 				temp = temp / 10;
 
 			}
@@ -308,7 +318,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		//determine how many spaces I have left to work with
 		digitsLeft = len - (charCounter);
 	}
-	//create a multiplier digit that we will use later on line 131
+	//create a multiplier digit that we will use later on line 326
 	int multiplier = 1;
 	temp = digitsLeft;
 	while (temp != 0)
@@ -317,15 +327,15 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		temp--;
 	}
 	//redo initial calculation
-    if ((newNumerator * multiplier)/newD > INT_MAX)
-    {
-        return false;
-    }
-	unsigned long mantissa = (newNumerator * multiplier)/newD;
+	if ((newNumerator * multiplier) / newD > INT_MAX)
+	{
+		return false;
+	}
+	unsigned long mantissa = (newNumerator * multiplier) / newD;
 	/*The above live is the same calculation we did earlier, except the decimal is moved over to
-	include the right amount of decimal characters.  It is treated as a whole number, but we know that the 
+	include the right amount of decimal characters.  It is treated as a whole number, but we know that the
 	extra digits are our missing decimal numbers*/
-	
+
 	unsigned long mantissaTemp = mantissa;
 	//adds the rest of the digits to the array
 	for (int i = 0; i < len - charCounter; i++)
@@ -336,6 +346,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		result[len - i - 1] = char('0' + remainder);
 		mantissaTemp = mantissaTemp / 10;
 	}
+	result[len] = char('\0');
 
 	if (isNegative)
 	{
@@ -403,7 +414,7 @@ void testMultiply()
 //This function will go through the numString and check to see if there are any
 //invalid chracters, it will store where the mantissa starts in the numString, and
 //it will store the length of the mantissa
-bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition, int& mantissaLength, bool& isNegative)
+bool ValidateAndGetMantissaLength(const char numString[], int& startOfMantissaPosition, int& mantissaLength, bool& isNegative)
 {
 	const int decimalVal = '.';
 
@@ -492,7 +503,7 @@ bool ValidateAndGetMantissaLength(char numString[], int& startOfMantissaPosition
 	return retval;
 }
 
-bool mantissa(char numString[], int& numerator, int& denominator)
+bool mantissa(const char numString[], int& numerator, int& denominator)
 {
 	bool retval = false;
 
@@ -548,7 +559,7 @@ bool mantissa(char numString[], int& numerator, int& denominator)
 
 //Returns true if all of the characters in an array are digits, +, - or leading spaces. Once a decimal place is found (if there is one), this function will stop checking for proper number syntax and for valid characters.
 //If the function returns true, the integer passed in will be updated.
-bool characteristic(char numString[], int& c)
+bool characteristic(const char numString[], int& c)
 {
 	bool still_true = true;
 	int whole_num = 0;
@@ -658,15 +669,15 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		pos++;
 	}
 
-	int numerator1 = c1*d1 + n1;
-	int numerator2 = c2*d2 + n2;
+	int numerator1 = c1 * d1 + n1;
+	int numerator2 = c2 * d2 + n2;
 	// checking if overflow for numerator1*numerator2
 	if (checkOverflowMult(numerator1, numerator2) == true)
 	{
 		return false;
 	}
-	int n = numerator1*numerator2;
-	int d = d1*d2;
+	int n = numerator1 * numerator2;
+	int d = d1 * d2;
 
 	// At this point n/d would be the correct answer except the decimal place would be lost because they are integers
 
@@ -710,7 +721,7 @@ bool multiply(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 
 	// FIND DIGITS IN DECIMAL PLACE
 
-	int remaining = n%d;
+	int remaining = n % d;
 	// If there is a decimal place...
 	if (remaining != 0)
 	{
@@ -821,3 +832,4 @@ int TenToThePower(int exponent)
 	}
 
 	return result;
+}
