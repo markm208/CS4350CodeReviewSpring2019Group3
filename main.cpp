@@ -348,35 +348,7 @@ bool subtract(int c1, int n1, int d1, int c2, int n2, int d2, char result[], int
 		//determine how many spaces I have left to work with
 		digitsLeft = len - (charCounter);
 	}
-	////create a multiplier digit that we will use later on line 326
-	//int multiplier = 1;
-	//temp = digitsLeft;
-	//while (temp != 0)
-	//{
-	//	multiplier = multiplier * 10;
-	//	temp--;
-	//}
-	////redo initial calculation
-	//if ((newNumerator * multiplier) / newD > INT_MAX)
-	//{
-	//	return false;
-	//}
-	//unsigned long mantissa = (newNumerator * multiplier) / newD;
-	///*The above live is the same calculation we did earlier, except the decimal is moved over to
-	//include the right amount of decimal characters.  It is treated as a whole number, but we know that the
-	//extra digits are our missing decimal numbers*/
-
-	//unsigned long mantissaTemp = mantissa;
-	////adds the rest of the digits to the array
-	//for (int i = 0; i < len - charCounter; i++)
-	//{
-	//	//gets the right-most digit of our new mantissa integer
-	//	int remainder = mantissaTemp % 10;
-	//	//adds a digit - starting at the end and moving to the left 
-	//	result[len - i - 1] = char('0' + remainder);
-	//	mantissaTemp = mantissaTemp / 10;
-	//}
-	//result[len] = char('\0');
+	
 	int remaining = newNumerator % newD;
 	// If there is a decimal place...
 	if (remaining != 0)
